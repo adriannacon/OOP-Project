@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'checkstyle' // Assuming you still want to use Checkstyle
+    id 'pmd' // Add the PMD plugin
+}
+
+repositories {
+    mavenCentral()
+    // jcenter() is deprecated and read-only as of February 1, 2022. If you don't specifically need it, consider removing it.
+    // jcenter()
+}
+
+
+// This section of the gradle build file was created using ChatGPT
+dependencies {
+    // Include PixelMed jar
+    implementation files('libs/pixelmed.jar')
+    // Other dependencies like JUnit for testing
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+
+compileJava {
+    sourceCompatibility = 11
+    targetCompatibility = 11
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'dicom.Runner' // Updated to your specified Main-Class
+    }
+    archiveBaseName = 'Runner' // Updated to your specified archive name
+}
+
+pmd {
+    toolVersion = "6.55.0"
+    ignoreFailures = true
+    ruleSets = [
+        "category/java/errorprone.xml", 
+        "category/java/bestpractices.xml",
+        "category/java/design.xml",
+        "category/java/codestyle.xml"
+    ]
+    pmdMain {
+        excludes = [
+            '**/TextUI.java',
+            '**/test/**'
+        ]
+    }
+}
+
+test {
+    useJUnitPlatform()
+    ignoreFailures = true // Keeping consistent with your approach to allow build success even if tests fail
+}
+
+checkstyle {
+    ignoreFailures = true
+    checkstyleTest.enabled = false
+}
